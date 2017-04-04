@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>/r/place Interactive Map</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+    <link rel="stylesheet" href="css/leaflet.css" />
+    
+    <script src="js/leaflet.js"></script>
+    <script src="js/jquery-3.2.0.min.js"></script>
+    <script src="js/fuse.min.js"></script>
+
+    <script src="js/L.Control.MousePosition.js"></script>
+    <link rel="stylesheet" href="css/L.Control.MousePosition.css" />
+    
+    <script src="js/leaflet-search.js"></script>
+    <link rel="stylesheet" href="css/leaflet-search.css" />
+    
+    <script type="text/javascript" src="locations.json"></script>
+
+    <script>
+      var layer;
+      function init() {
+        var mapMinZoom = 0;
+        var mapMaxZoom = 5;
+        var map = L.map('map', {
+          maxZoom: mapMaxZoom,
+          minZoom: mapMinZoom,
+          crs: L.CRS.Simple
+        }).setView([0, 0], mapMaxZoom);
+        
+        var mapBounds = new L.LatLngBounds(
+            map.unproject([0, 8192], mapMaxZoom),
+            map.unproject([8192, 0], mapMaxZoom));
+            
+        map.fitBounds(mapBounds);
+        layer = L.tileLayer('tiles/{z}/{x}/{y}.png', {
+          minZoom: mapMinZoom, maxZoom: mapMaxZoom,
+          bounds: mapBounds,
+          attribution: 'Created by elfin8er',
+          noWrap: true,
+          tms: false
+        }).addTo(map);
+        L.control.mousePosition().addTo(map);
+
+        var markersLayer = new L.LayerGroup();
+        map.addLayer(markersLayer);
+
+        for(i in locations) {
+          var title = locations[i].title,  //value searched
+            loc = locations[i].loc,    //position found
+            url = locations[i].url,
+            description = locations[i].description,
+            marker = new L.Marker(new L.latLng(loc), {title: title} );//se property searched
+          marker.bindPopup("<center><b><a href='" + url + "'> " + title + "</a></b></center>" + description);
+          markersLayer.addLayer(marker);
+        }
+
+        var fuse = new Fuse(locations, {
+          keys: ['title']
+        });
+        
+        var controlSearch = new L.Control.Search({
+          position: 'topright',
+          layer: markersLayer,
+          filterData: function(text, records) {
+            var jsons = fuse.search(text),
+              ret = {}, key;
+      
+            for(var i in jsons) {
+              key = jsons[i].title;
+              ret[ key ]= records[key];
+            }
+            console.log(jsons,ret);
+            return ret;
+          },
+          zoom: 12,
+          marker: false
+        })
+        map.addControl(controlSearch);
+
+        map.on('zoomend', onZoomend);
+        onZoomend();
+        function onZoomend() {
+          var zoom = map.getZoom();
+      
+          if (zoom < 5) {
+            map.removeLayer(markersLayer); // Direct reference to the marker
+          } else {
+            map.addLayer(markersLayer);
+          }
+      
+        }
+      }
+    </script>
+    <style>
+      html, body, #map { width:100%; height:100%; margin:0; padding:0; z-index: 1; }
+      #slider{ position: absolute; top: 10px; right: 10px; z-index: 5; }
+    </style>
+  </head>
+  <body onload="init()">
+    <div id="map"></div>
+  </body>
+</html>

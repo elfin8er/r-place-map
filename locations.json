@@ -1,0 +1,4 @@
+locations = [
+	{"loc":[-240, 240], "title":"The Blue Corner", "url":"http://reddit.com/r/TheBlueCorner", "description":""},
+	{"loc":[-104, 92], "title":"The Mona Lisa", "url":"http://reddit.com/r/monalisaclan", "description":""}
+];
