@@ -54,9 +54,24 @@
             locx = -Math.abs(atlas[i].center[1])/4,
             url = atlas[i].website,
             description = atlas[i].description,
-            marker = new L.Marker(new L.latLng(locx, locy), {title: title} );//se property searched
-          marker.bindPopup("<center><b><a href='" + url + "'> " + title + "</a></b></center>" + description);
-          markersLayer.addLayer(marker);
+            path_before = atlas[i].path
+            path = [];
+
+          for(j in path_before){
+            path[j] = [];
+            path[j][1] = path_before[j][0] / 4;
+            path[j][0] = -Math.abs(path_before[j][1]) / 4;
+          }
+            var polygon = L.polygon(path, {color:'yellow', fill:true, weight:2});
+            polygon.bindPopup("<center><b><a href='" + url + "'> " + title + "</a></b></center>" + description);
+            polygon.on('mouseover', function(){
+              this.setStyle({color:'blue'})
+            });
+            polygon.on('mouseout', function(){
+              this.setStyle({color:'yellow'})
+            });
+            
+            map.addLayer(polygon);
         }
 
         var fuse = new Fuse(atlas, {
