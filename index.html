@@ -57,7 +57,6 @@
             marker = new L.Marker(new L.latLng(locx, locy), {title: title} );//se property searched
           marker.bindPopup("<center><b><a href='" + url + "'> " + title + "</a></b></center>" + description);
           markersLayer.addLayer(marker);
-          console.log(locx, locy);
         }
 
         var fuse = new Fuse(atlas, {
@@ -72,10 +71,9 @@
               ret = {}, key;
       
             for(var i in jsons) {
-              key = jsons[i].title;
+              key = jsons[i].name;
               ret[ key ]= records[key];
             }
-            console.log(jsons,ret);
             return ret;
           },
           zoom: 12,
