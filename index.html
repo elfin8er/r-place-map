@@ -16,7 +16,7 @@
     <script src="js/leaflet-search.js"></script>
     <link rel="stylesheet" href="css/leaflet-search.css" />
     
-    <script type="text/javascript" src="locations.json"></script>
+    <script type="text/javascript" src="https://draemm.li/various/place-atlas/atlas.js"></script>
 
     <script>
       var layer;
@@ -48,18 +48,20 @@
         var markersLayer = new L.LayerGroup();
         map.addLayer(markersLayer);
 
-        for(i in locations) {
-          var title = locations[i].title,  //value searched
-            loc = locations[i].loc,    //position found
-            url = locations[i].url,
-            description = locations[i].description,
-            marker = new L.Marker(new L.latLng(loc), {title: title} );//se property searched
+        for(i in atlas) {
+          var title = atlas[i].name,  //value searched
+            locy = atlas[i].center[0] / 4,    //position found
+            locx = -Math.abs(atlas[i].center[1])/4,
+            url = atlas[i].website,
+            description = atlas[i].description,
+            marker = new L.Marker(new L.latLng(locx, locy), {title: title} );//se property searched
           marker.bindPopup("<center><b><a href='" + url + "'> " + title + "</a></b></center>" + description);
           markersLayer.addLayer(marker);
+          console.log(locx, locy);
         }
 
-        var fuse = new Fuse(locations, {
-          keys: ['title', 'tags']
+        var fuse = new Fuse(atlas, {
+          keys: ['name', 'description']
         });
         
         var controlSearch = new L.Control.Search({
