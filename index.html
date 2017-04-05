@@ -16,7 +16,7 @@
     <script src="js/leaflet-search.js"></script>
     <link rel="stylesheet" href="css/leaflet-search.css" />
     
-    <script type="text/javascript" src="https://draemm.li/various/place-atlas/atlas.js"></script>
+    <script type="text/javascript" src="https://draemm.li/various/place-atlas/_js/atlas-min.js?version=1.0.39"></script>
 
     <script>
       var layer;
@@ -45,8 +45,8 @@
         }).addTo(map);
         L.control.mousePosition().addTo(map);
 
-        var markersLayer = new L.LayerGroup();
-        map.addLayer(markersLayer);
+        var markersLayer = new L.LayerGroup().addTo(map);
+        //map.addLayer(markersLayer);
 
         for(i in atlas) {
           var title = atlas[i].name,  //value searched
@@ -63,14 +63,13 @@
             path[j][0] = -Math.abs(path_before[j][1]) / 4;
           }
             var polygon = L.polygon(path, {color:'yellow', fill:true, weight:2});
-            polygon.bindPopup("<center><b><a href='" + url + "'> " + title + "</a></b></center>" + description);
             polygon.on('mouseover', function(){
               this.setStyle({color:'blue'})
             });
             polygon.on('mouseout', function(){
               this.setStyle({color:'yellow'})
             });
-            
+
             map.addLayer(polygon);
         }
 
@@ -95,19 +94,6 @@
           marker: false
         })
         map.addControl(controlSearch);
-
-        map.on('zoomend', onZoomend);
-        onZoomend();
-        function onZoomend() {
-          var zoom = map.getZoom();
-      
-          if (zoom < 5) {
-            map.removeLayer(markersLayer); // Direct reference to the marker
-          } else {
-            map.addLayer(markersLayer);
-          }
-      
-        }
       }
     </script>
     <style>
